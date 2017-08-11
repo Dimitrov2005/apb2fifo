@@ -1,4 +1,4 @@
-class Agent extends uvm_agent
+class Agent extends uvm_agent;
   `uvm_component_utils(Agent)
     Driver drv;
    Monitor mon;
@@ -28,7 +28,7 @@ class Agent extends uvm_agent
    function void connect_phase(uvm_phase phase);
       super.connect_phase(phase);
       mon.viface=agent_cfg.viface;
-      mon.aportMon.connect(aportA);
+      mon.aportM.connect(aportA);
       drv.seq_item_port.connect(seq.seq_item_export);
       drv.viface=agent_cfg.viface;
    endfunction // connect_phase

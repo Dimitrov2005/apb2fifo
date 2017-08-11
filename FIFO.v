@@ -5,12 +5,12 @@ module fifo(WREQ,WD,f,e,RREQ,RD,rst,clkw,clkr);
    
    input WREQ,RREQ;
    input clkw,clkr,rst;
-   input [31:0] WD;
-   output [31:0] RD;
+   input [7:0] WD;
+   output [7:0] RD;
    output 	f,e;
    reg 		f,e;
-   reg [31:0] 	RD;	
-   reg [32:0] 	A1,A2;
+   reg [7:0] 	RD;	
+   reg [8:0] 	A1,A2;
 
    //memory
    sync_mem memory(
@@ -29,7 +29,7 @@ module fifo(WREQ,WD,f,e,RREQ,RD,rst,clkw,clkr);
    
    always @(*)
      begin 				
-	if(A1[31:0]==A2[31:0] && A1[32]!=A2[32])
+	if((A1[7:0]-3)==(A2[7:0]-3) && A1[8]!=A2[8])
 	  f=1;
 
 	else    f=0;
@@ -37,7 +37,7 @@ module fifo(WREQ,WD,f,e,RREQ,RD,rst,clkw,clkr);
      end
    always @(*)
      begin
-	if((A1[31:0]==A2[31:0]) && (A1[32]==A2[32]))
+	if((A1[7:0]==A2[7:0]) && (A1[8]==A2[8]))
 	  e=1;
 	else    e=0;
      end
@@ -45,8 +45,8 @@ module fifo(WREQ,WD,f,e,RREQ,RD,rst,clkw,clkr);
   always @(negedge rst)
      begin	
 	if(~rst) 
-	   A1 <= 33'b00000000;	
-	  A2 <= 33'b00000000;
+	   A1 <= 9'b00000000;	
+	  A2 <= 9'b00000000;
      end
    
    always @(posedge clkw)

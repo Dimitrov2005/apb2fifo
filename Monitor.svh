@@ -3,7 +3,8 @@ class Monitor extends uvm_monitor;
 
      virtual iface viface;
    uvm_analysis_port#(Transaction)aportM;
-
+   Transaction tr;
+   
    function new(string name, uvm_component parent);
       super.new(name,parent);
    endfunction // new
@@ -17,15 +18,16 @@ class Monitor extends uvm_monitor;
       forever
 	begin
 	   // sample signals from the viface
-	   wait(viface.PRESETn);
+	  // wait(viface.PRESETn==0);
 	   
-	   @(posedge viface.PCLK)
+	   @(posedge viface.PCLK);
 	     tr=Transaction::type_id::create("tr");
 	   tr.PSELx=viface.PSELx;
 	   tr.PENABLE=viface.PENABLE;
 	   tr.PADDR=viface.PADDR;
 	   tr.PWRITE=viface.PWRITE;
 	   tr.PSLVERR=viface.PSLVERR;
+	   tr.PREADY=viface.PREADY;
 	   tr.PWDATA=viface.PWDATA;
 	   tr.PRDATA=viface.PRDATA;
 	  

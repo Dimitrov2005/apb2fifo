@@ -1,12 +1,14 @@
 class Transaction extends uvm_sequence_item;
    `uvm_object_utils(Transaction)
 
-     logic PSELx;
-   logic   PENABLE;
-   logic   PWRITE;
+   rand logic PSELx;
+   rand logic   PENABLE;
+   rand logic   PWRITE;
+   rand logic [7:0] PWDATA;
+   rand logic PADDR;
    logic   PSLVERR;
-   logic [31:0] PWDATA;
-   logic [31:0] PRDATA;
+   logic   PREADY;
+   logic [7:0] PRDATA;
    
    function new(string name="");
       super.new(name);

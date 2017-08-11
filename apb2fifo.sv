@@ -1,30 +1,32 @@
 module apb2fifo(
-		input wire 
+		input 
 		PSELx,//selector signal
 		PENABLE,
 		PADDR, // 0-write 1-read
 		PWRITE, // address and control signals end
 		PRESETn,
 		PCLK,
-		[31:0] PWDATA,
+		[7:0] PWDATA,
 
-		output reg
+		output
+		PREADY,
 		PSLVERR,
-	 	[31:0] PRDATA //data
+	 	[7:0] PRDATA //data
 		);
    
-   bit 			   WREQ,RREQ,FULL,EMPTY;
+   reg 	   WREQ,RREQ,FULL,EMPTY,PSLVERR;
    
     //registers for write
-   reg [31:0] 		   r_PWDATA,	
-			   r_PRDATA;
+   reg [7:0] 		   r_PWDATA,PRDATA;
   
- reg 			   r_PADDR, // 0-write 1-read
+   reg 			   r_PADDR, // 0-write 1-read
 			   r_PWRITE,
-			   r_PSELx,
-			   r_PENABLE;
+			   r_PENABLE,
+			   r_PSELx;
+			 
+   
 
-  //fifo instance
+  //fifo instance\\
    fifo FIFO(.WREQ(WREQ),
 	.WD(r_PWDATA),
 	.f(FULL),
@@ -36,58 +38,64 @@ module apb2fifo(
 	.clkr(PCLK)
 	);
 
-   
 always @ (posedge PCLK or negedge PRESETn)
-  begin
-     if (~PRESETn)
+       if (~PRESETn)
        begin
-	  r_PWDATA[31:0]<=32'b0;
+	  r_PWDATA[7:0]<=8'b0;
 	  r_PADDR<=0;
 	  r_PWRITE<=0;
 	  r_PSELx<=0;
-	  r_PENABLE<=0;
+          r_PENABLE<=0;
+	  PSLVERR<=0;
 	  WREQ<=0;
 	  RREQ<=0;
-       end
-     else
-       begin
-	  r_PWDATA[31:0]<=PWDATA[31:0];
-	  r_PADDR<=PADDR;
-	  r_PWRITE<=PWRITE;
-	  r_PSELx<=PSELx;
-	  r_PENABLE<=PENABLE;
-       end
-  end // registering write input
-
-always @(posedge PCLK or posedge PENABLE)
-  begin //write logic
-     if(r_PSELx && r_PWRITE && (!r_PADDR))
-       begin
-	  if(FULL)
-	    PSLVERR<=1;
-	  else
-	    PSLVERR<=0;
-	  
-	  WREQ<=1;
-	  RREQ<=0;
-       end
-  end
+       end // if (~PRESETn)
    
+       else
+	 begin
+	    r_PWDATA[7:0]<=PWDATA[7:0];
+	    r_PADDR<=PADDR;
+	    r_PWRITE<=PWRITE;
+	    r_PSELx<=PSELx;
+	    r_PENABLE<=PENABLE;
+	 end // else: !if(~PRESETn)
+
+assign PREADY=(PENABLE&&PSELx&&!PSLVERR);
+  
+always @ (posedge PCLK)
+    begin
+    if(PSELx && PWRITE && (!PADDR))
+      begin
+	 if(FULL)
+	   begin
+	     PSLVERR<=1;
+	   end
+	 
+	 else if(PENABLE)
+	   begin 
+	      PSLVERR<=0;
+	      WREQ<=1;
+	      RREQ<=0;
+	   end 
+      end 
+    end
+   
+      
 always @(posedge PCLK or posedge PENABLE)
   begin // read logic
-     if(PSELx && r_PADDR &&(!PWRITE))
+     if(r_PSELx && r_PADDR &&(!PWRITE))
        begin
 	  if(EMPTY)
-	    PSLVERR<=1;
-	  else
-	    PSLVERR<=0;
-
-	  RREQ<=1;
-	  WREQ<=0;
-       end
-     
+	   PSLVERR<=1;
+	  
+	  else if(PENABLE)
+	    begin
+	      PSLVERR<=0;
+	      WREQ<=0;
+	      RREQ<=1;
+	   end 
+       end       
   end
- 
 endmodule
 	
 	 

@@ -16,25 +16,24 @@ class Driver extends uvm_driver#(Transaction);
       forever
 	begin
 
-	   wait(viface.PRESETn==0);
+	   wait(viface.PRESETn==1);
 	   seq_item_port.get_next_item(tr);
 	   @(posedge viface.PCLK)
-	     if(viface.PRESETn)
-	       begin
-		  viface.PSELx=x;
-		  viface.PENABLE=x;
-		  viface.PWRITE=x;
-		  viface.PADDR=x;
-	       end
-	     else
-	       begin
-		  viface.PSELx=tr.PSELx;
-		  viface.PENABLE=tr.PENABLE;
-		  viface.PWRITE=tr.PWRITE;
-		  viface.PADDR=tr.PADDR;
-		  viface.PWDATA=tr.PWDATA;
-	       end // else: !if(viface.PRESETn)
-	   seq_item_port.item_done();
+	     @(posedge viface.PCLK);
+		viface.PADDR=tr.PADDR; 
+	        viface.PSELx=tr.PSELx;
+		viface.PWDATA=tr.PWDATA; 
+		viface.PWRITE=tr.PWRITE;
+	        tr.PSLVERR=viface.PSLVERR;
+	   @(posedge viface.PCLK)
+	     viface.PENABLE=tr.PENABLE;
+	   @(posedge viface.PCLK)
+	     begin
+	        viface.PSELx=0;
+		viface.PWRITE=0;
+		viface.PENABLE=0;
+	     end
+	   seq_item_port.item_done(tr);
 	end // forever begin
    endtask
 

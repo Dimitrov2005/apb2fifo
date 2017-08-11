@@ -1,11 +1,11 @@
 module sync_mem(A1,A2,WD1,WD2,WE1,WE2,RD1,RD2,clk1,clk2);
 
-	input [31:0] A1,A2,WD1,WD2;
+	input [8:0] A1,A2,WD1,WD2;
 	input WE1,WE2,clk1,clk2;
 	
-	output [31:0] RD1,RD2;
-	reg [31:0] RD1,RD2;
-	reg [31:0] mem[256];
+	output [8:0] RD1,RD2;
+	reg [8:0] RD1,RD2;
+	reg [8:0] mem[256];
 
 	always @(posedge clk1) 
 	begin
