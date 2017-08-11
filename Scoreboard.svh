@@ -53,7 +53,7 @@ class Scoreboard extends uvm_scoreboard;
 	   q.push_front(tr.PWDATA);   
 	   `uvm_info("TRREC",$sformatf("------SCB TRANS REC  %h qsize= %d--------",tr.PWDATA,q.size()),UVM_MEDIUM);
 	end
-     else if((q.size()==253) && (tr.PSLVERR))
+     else if((q.size()==256) && (tr.PSLVERR))
 	begin	  
 	   `uvm_warning("SCBF",$sformatf("--FIFO FULL :: PSLVERR %b, Qsize : %d :------",tr.PSLVERR,q.size()));
 	end
@@ -61,7 +61,7 @@ class Scoreboard extends uvm_scoreboard;
       // overwrite logic
       if((tr.PSLVERR==1)&&((tr.PSELx==1)&&(tr.PENABLE==1)&&(tr.PWRITE==1)&&(tr.PADDR==0)))
 	begin
-	   q[(q.size())-4]=(tr.PWDATA);
+	   q[(q.size())-1]=(tr.PWDATA);
 	   `uvm_warning("SCBOW",$sformatf("--------OVERWRITE, qdatatoadd =%h ------",tr.PWDATA));
 	end
    
@@ -71,13 +71,7 @@ class Scoreboard extends uvm_scoreboard;
    
 
 //********** //pop and empty function begin\\ **********\\\
-   function void popEmpt(Transaction tr);
-    
-     if((tr.PSLVERR==1)&&((tr.PSELx==1)&&(tr.PENABLE==1)&&(tr.PWRITE==0)&&(tr.PADDR==1)))
-	begin
-	   `uvm_warning("SCBRWE","--------READ WHILE EMPTY ERROR ------");
-	end
-      
+   function void popEmpt(Transaction tr);  
       i=q.pop_back(); 
      if(tr.PRDATA!=i)
 	begin

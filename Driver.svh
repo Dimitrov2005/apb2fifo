@@ -30,7 +30,6 @@ class Driver extends uvm_driver#(Transaction);
 	   @(posedge viface.PCLK)
 	     begin
 	        viface.PSELx=0;
-		viface.PWRITE=0;
 		viface.PENABLE=0;
 	     end
 	   seq_item_port.item_done(tr);

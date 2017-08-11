@@ -60,42 +60,50 @@ always @ (posedge PCLK or negedge PRESETn)
 	    r_PENABLE<=PENABLE;
 	 end // else: !if(~PRESETn)
 
-assign PREADY=(PENABLE&&PSELx&&!PSLVERR);
-  
-always @ (posedge PCLK)
-    begin
-    if(PSELx && PWRITE && (!PADDR))
-      begin
-	 if(FULL)
-	   begin
-	     PSLVERR<=1;
-	   end
-	 
-	 else if(PENABLE)
-	   begin 
-	      PSLVERR<=0;
-	      WREQ<=1;
-	      RREQ<=0;
-	   end 
-      end 
-    end
    
-      
-always @(posedge PCLK or posedge PENABLE)
-  begin // read logic
-     if(r_PSELx && r_PADDR &&(!PWRITE))
-       begin
-	  if(EMPTY)
-	   PSLVERR<=1;
-	  
+always @ (*)
+    begin
+       if(PSELx && PWRITE && (!PADDR))
+	 begin 
+	    if(FULL)
+	      begin
+		 PSLVERR<=1;
+		 WREQ<=0;
+		 RREQ<=0;	 
+	      end
+	    
+	  else if(PENABLE)
+	      begin 
+		 WREQ<=1;
+		 RREQ<=0;
+	      end
+	 end
+       if(PSELx && PADDR &&(!PWRITE))
+	 begin
+	    if(EMPTY)
+	      begin
+		 PSLVERR<=1;
+		 WREQ<=0;
+		 RREQ<=0;	 
+	      end
+	    
 	  else if(PENABLE)
 	    begin
-	      PSLVERR<=0;
 	      WREQ<=0;
 	      RREQ<=1;
-	   end 
-       end       
-  end
+	   end  
+       end	 	  
+       else 
+	 begin 
+	    WREQ=0;
+	    RREQ=0;
+	 end
+      
+    end
+ 
+assign PREADY=(PENABLE&&PSELx&&!PSLVERR);
+//assign PSLVERR = ((FULL&&WREQ)||(EMPTY&&RREQ));
+   
 endmodule
 	
 	 
