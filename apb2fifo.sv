@@ -74,6 +74,7 @@ always @ (*)
 	    
 	  else if(PENABLE)
 	      begin 
+		 PSLVERR<=0;
 		 WREQ<=1;
 		 RREQ<=0;
 	      end
@@ -88,7 +89,8 @@ always @ (*)
 	      end
 	    
 	  else if(PENABLE)
-	    begin
+	    begin 
+	      PSLVERR<=0;
 	      WREQ<=0;
 	      RREQ<=1;
 	   end  
