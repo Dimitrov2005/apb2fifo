@@ -3,7 +3,7 @@ module apb2fifo(
 		PSELx,//selector signal
 		PENABLE,
 		PADDR, // 0-write 1-read
-		PWRITE, // address and control signals end
+		PWRITE, 
 		PRESETn,
 		PCLK,
 		[7:0] PWDATA,
@@ -104,51 +104,5 @@ always @ (*)
     end
  
 assign PREADY=(PENABLE&&PSELx&&!PSLVERR);
-//assign PSLVERR = ((FULL&&WREQ)||(EMPTY&&RREQ));
    
 endmodule
-	
-	 
- /*module test ();
-
-   reg   PSELx,//selector signal
-	 PENABLE,
-	 PADDR, // 0-write 1-read
-	 PWRITE, // address and control signals end
-	 PRESETn,
-	 PCLK;
-   reg [31:0] PWDATA;
-   
-   wire PSLVERR;	 
-   wire [31:0] PRDATA; //data
-    
-   apb2fifo apbController(
-			  PSELx,//selector signal
-			  PENABLE,
-			  PADDR, // 0-write 1-read
-			  PWRITE, // address and control signals end
-			  PRESETn,
-			  PCLK,
-			  PWDATA,
-			  PSLVERR,
-	 		  PRDATA //data
-			  );
-
-   always #5 PCLK=~PCLK;
-   
-   initial
-     begin
-	PCLK=0;
-	PRESETn=1;
-	#2 PRESETn=0;
-	#2 PRESETn=1;
-	PSELx=1;
-	PENABLE=1;
-	PADDR=0;
-	#6 PWRITE=1;
-	PWDATA=32'b1;
-	#100 $finish();
-     end
-
-endmodule // test
-*/
